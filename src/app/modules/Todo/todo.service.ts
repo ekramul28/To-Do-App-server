@@ -1,15 +1,16 @@
-import { Todo, ITodo } from "../models/todo.model";
+import { ITodo } from "./todo.interface";
+import { Todo } from "./todo.model";
 import {
   createGoogleEvent,
   deleteGoogleEvent,
   updateGoogleEvent,
-} from "../config/googleAuth";
+} from "./todo.utils";
 
 const createTodo = async (todoData: ITodo) => {
   const todo = await Todo.create(todoData);
   if (todoData.user) {
     const eventId = await createGoogleEvent(todo);
-    todo.googleEventId = eventId;
+    todo.googleEventId = eventId ?? undefined;
     await todo.save();
   }
   return todo;

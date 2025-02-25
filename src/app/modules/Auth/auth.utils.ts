@@ -13,3 +13,7 @@ export const createToken = (
 export const verifyToken = (token: string, secret: string) => {
   return jwt.verify(token, secret) as JwtPayload;
 };
+
+export const generateMailCode = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
