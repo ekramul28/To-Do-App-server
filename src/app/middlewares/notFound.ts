@@ -1,10 +1,12 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
-const notFound = (req: Request, res: Response, next: NextFunction) => {
+// Updated notFound middleware with explicit return type
+const notFound = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Response => {
   return res.status(httpStatus.NOT_FOUND).json({
     success: false,
     message: "API Not Found !!",

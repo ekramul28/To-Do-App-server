@@ -1,7 +1,7 @@
-import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
-import multer from 'multer';
-import config from '../config';
+import { UploadApiResponse, v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+import multer from "multer";
+import config from "../config";
 
 cloudinary.config({
   cloud_name: config.cloudinary_cloud_name,
@@ -11,7 +11,7 @@ cloudinary.config({
 
 export const sendImageToCloudinary = (
   imageName: string,
-  path: string,
+  path: string
 ): Promise<Record<string, unknown>> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
@@ -27,21 +27,21 @@ export const sendImageToCloudinary = (
           if (err) {
             console.log(err);
           } else {
-            console.log('File is deleted.');
+            console.log("File is deleted.");
           }
         });
-      },
+      }
     );
   });
 };
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, process.cwd() + '/uploads/');
+  destination: function (req: any, file: any, cb: any) {
+    cb(null, process.cwd() + "/uploads/");
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix);
+  filename: function (req: any, file: any, cb: any) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix);
   },
 });
 
