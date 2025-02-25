@@ -1,8 +1,8 @@
 import { Schema, model } from "mongoose";
-import { IUser } from "./user.interface";
+import { IUser, UserModel } from "./user.interface";
 import bcrypt from "bcrypt";
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, UserModel>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -10,6 +10,12 @@ const userSchema = new Schema<IUser>(
     role: { type: String, enum: ["user", "admin"], default: "user" },
     isGoogleAuth: { type: Boolean, default: false },
     googleId: { type: String },
+    isDeleted: { type: Boolean, default: false },
+    userStatus: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
   { timestamps: true }
 );
@@ -22,4 +28,23 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-export const User = model<IUser>("User", userSchema);
+// Remove password after saving user
+userSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
+
+// Check if user exists by ID
+userSchema.statics.isUserExistsById = async function (id: string) {
+  return await this.findOne({ _id: id }).select("+password");
+};
+
+// Compare passwords
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword: string,
+  hashedPassword: string
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+export const User = model<IUser, UserModel>("User", userSchema);

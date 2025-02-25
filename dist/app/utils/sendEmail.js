@@ -17,20 +17,20 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 const config_1 = __importDefault(require("../config"));
 const sendEmail = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
     const transporter = nodemailer_1.default.createTransport({
-        host: 'smtp.gmail.com.',
+        host: "smtp.gmail.com.",
         port: 587,
-        secure: config_1.default.NODE_ENV === 'production',
+        secure: config_1.default.NODE_ENV === "production",
         auth: {
             // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-            user: 'mezbaul@programming-hero.com',
-            pass: 'xfqj dshz wdui ymtb',
+            user: "mezbaul@programming-hero.com",
+            pass: "xfqj dshz wdui ymtb",
         },
     });
     yield transporter.sendMail({
-        from: 'mezbaul@programming-hero.com', // sender address
+        from: "mezbaul@programming-hero.com", // sender address
         to, // list of receivers
-        subject: 'Reset your password within ten mins!', // Subject line
-        text: '', // plain text body
+        subject: "Reset your password within ten mins!", // Subject line
+        text: "", // plain text body
         html, // html body
     });
 });
