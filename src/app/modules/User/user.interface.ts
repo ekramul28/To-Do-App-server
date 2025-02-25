@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
 
-export type UserStatus = "in-progress" | "blocked"; // Define userStatus type
+export type UserStatus = "in-progress" | "blocked";
 
 export interface IUser {
   _id?: string;
@@ -10,7 +10,7 @@ export interface IUser {
   role: "user" | "admin";
   isGoogleAuth?: boolean;
   isDeleted: boolean;
-  userStatus: UserStatus; // Assign correct type
+  userStatus: UserStatus;
   googleId?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -18,7 +18,7 @@ export interface IUser {
 
 export interface UserModel extends Model<IUser> {
   // Instance method for checking if the user exists
-  isUserExistsById(id: string): Promise<IUser | null>; // Fixed return type
+  isUserExistsById(id: string): Promise<IUser | null>;
 
   // Instance method for checking if passwords match
   isPasswordMatched(
