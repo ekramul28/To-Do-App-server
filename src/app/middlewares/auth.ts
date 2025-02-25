@@ -38,7 +38,7 @@ const auth = (...requiredRoles: any) => {
     }
 
     // checking if the user is blocked
-    const userStatus = user?.status;
+    const userStatus = user?.userStatus;
 
     if (userStatus === "blocked") {
       throw new AppError(httpStatus.FORBIDDEN, "This user is blocked ! !");

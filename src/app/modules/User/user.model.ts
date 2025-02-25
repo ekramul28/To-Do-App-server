@@ -13,8 +13,8 @@ const userSchema = new Schema<IUser, UserModel>(
     isDeleted: { type: Boolean, default: false },
     userStatus: {
       type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+      enum: ["blocked", "in-progress"],
+      default: "in-progress",
     },
   },
   { timestamps: true }

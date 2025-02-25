@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
 
-export type UserStatus = "active" | "inactive"; // Define userStatus type
+export type UserStatus = "in-progress" | "blocked"; // Define userStatus type
 
 export interface IUser {
   _id?: string;
