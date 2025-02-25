@@ -62,10 +62,10 @@ const createAdminFromDB = async (file: any, data: any) => {
 const getMe = async (userId: string, role: string) => {
   let result = null;
   if (role === "user") {
-    result = await Student.findOne({ id: userId }).populate("user");
+    result = await User.findOne({ id: userId });
   }
   if (role === "admin") {
-    result = await Admin.findOne({ id: userId }).populate("user");
+    result = await User.findOne({ id: userId });
   }
 
   return result;
