@@ -12,7 +12,8 @@ const app: Application = express();
 
 import dotenv from "dotenv";
 import session from "express-session";
-import passport from "passport";
+import passport from "./app/utils/passport";
+
 dotenv.config();
 // Parsers
 app.use(express.json());
@@ -34,7 +35,6 @@ app.use(
     saveUninitialized: false,
   })
 );
-
 // Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
