@@ -7,8 +7,6 @@ import { sendEmail } from "../../utils/sendEmail";
 import { User } from "../User/user.model";
 import { TLoginUser } from "./auth.interface";
 import { createToken, generateMailCode, verifyToken } from "./auth.utils";
-// import { verifyTOTP } from "../utils/totp";
-// import { redisClient } from "../config/redis";
 
 const loginUser = async (payload: TLoginUser) => {
   // Checking if the user exists
