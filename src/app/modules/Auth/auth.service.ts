@@ -35,7 +35,7 @@ const loginUser = async (payload: TLoginUser) => {
 
   // Step 1: Generate Mail Code and store it
   const mailCode = generateMailCode(); // Generates a 6-digit code
-  await redisClient.setEx(`mailCode:${user.email}`, 120, mailCode); // Store in Redis for 2 minutes
+  // await redisClient.setEx(`mailCode:${user.email}`, 120, mailCode); // Store in Redis for 2 minutes
   await sendEmail(user.email, mailCode); // Send the mail code
 
   return {
@@ -46,11 +46,11 @@ const loginUser = async (payload: TLoginUser) => {
 
 // Function to verify Mail Code
 const verifyMailCode = async (email: string, code: string) => {
-  const storedCode = await redisClient.get(`mailCode:${email}`);
+  // const storedCode = await redisClient.get(`mailCode:${email}`);
 
-  if (!storedCode || storedCode !== code) {
-    throw new AppError(httpStatus.FORBIDDEN, "Invalid or expired mail code.");
-  }
+  // if (!storedCode || storedCode !== code) {
+  //   throw new AppError(httpStatus.FORBIDDEN, "Invalid or expired mail code.");
+  // }
 
   // Step 2: Ask for Google Authenticator Code
   return {
@@ -83,13 +83,13 @@ const verifyGoogleAuth = async (email: string, googleCode: string) => {
 
   const accessToken = createToken(
     jwtPayload,
-    config.jwt_access_secret,
-    config.jwt_access_expires_in
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string
   );
   const refreshToken = createToken(
     jwtPayload,
-    config.jwt_refresh_secret,
-    config.jwt_refresh_expires_in
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as string
   );
 
   return {

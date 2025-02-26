@@ -32,20 +32,19 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const auth_service_1 = require("./auth.service");
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthServices.loginUser(req.body);
-    const { refreshToken, accessToken, needsPasswordChange } = result;
-    res.cookie('refreshToken', refreshToken, {
-        secure: config_1.default.NODE_ENV === 'production',
+    const { refreshToken, accessToken } = result;
+    res.cookie("refreshToken", refreshToken, {
+        secure: config_1.default.NODE_ENV === "production",
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24 * 365,
     });
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'User is logged in succesfully!',
+        message: "User is logged in successfully!",
         data: {
             accessToken,
-            needsPasswordChange,
         },
     });
 }));
@@ -55,7 +54,7 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Password is updated succesfully!',
+        message: "Password is updated successfully!",
         data: result,
     });
 }));
@@ -65,7 +64,7 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Access token is retrieved succesfully!',
+        message: "Access token is retrieved successfully!",
         data: result,
     });
 }));
@@ -75,20 +74,20 @@ const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Reset link is generated succesfully!',
+        message: "Reset link is generated successfully!",
         data: result,
     });
 }));
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.headers.authorization;
     if (!token) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Something went wrong !');
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Something went wrong !");
     }
     const result = yield auth_service_1.AuthServices.resetPassword(req.body, token);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Password reset succesfully!',
+        message: "Password reset successfully!",
         data: result,
     });
 }));

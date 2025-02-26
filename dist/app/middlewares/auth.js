@@ -16,39 +16,35 @@ const http_status_1 = __importDefault(require("http-status"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("../config"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
-const user_model_1 = require("../modules/User/user.model");
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
+const user_model_1 = require("../modules/User/user.model");
 const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
         // checking if the token is missing
         if (!token) {
-            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized!');
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized!");
         }
         // checking if the given token is valid
         const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
         const { role, userId, iat } = decoded;
         // checking if the user is exist
-        const user = yield user_model_1.User.isUserExistsByCustomId(userId);
+        const user = yield user_model_1.User.isUserExistsById(userId);
         if (!user) {
-            throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'This user is not found !');
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, "This user is not found !");
         }
         // checking if the user is already deleted
         const isDeleted = user === null || user === void 0 ? void 0 : user.isDeleted;
         if (isDeleted) {
-            throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'This user is deleted !');
+            throw new AppError_1.default(http_status_1.default.FORBIDDEN, "This user is deleted !");
         }
         // checking if the user is blocked
-        const userStatus = user === null || user === void 0 ? void 0 : user.status;
-        if (userStatus === 'blocked') {
-            throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'This user is blocked ! !');
-        }
-        if (user.passwordChangedAt &&
-            user_model_1.User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat)) {
-            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized !');
+        const userStatus = user === null || user === void 0 ? void 0 : user.userStatus;
+        if (userStatus === "blocked") {
+            throw new AppError_1.default(http_status_1.default.FORBIDDEN, "This user is blocked ! !");
         }
         if (requiredRoles && !requiredRoles.includes(role)) {
-            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized  hi!');
+            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized  hi!");
         }
         req.user = decoded;
         next();

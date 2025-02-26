@@ -22,6 +22,12 @@ const userSchema = new mongoose_1.Schema({
     role: { type: String, enum: ["user", "admin"], default: "user" },
     isGoogleAuth: { type: Boolean, default: false },
     googleId: { type: String },
+    isDeleted: { type: Boolean, default: false },
+    userStatus: {
+        type: String,
+        enum: ["blocked", "in-progress"],
+        default: "in-progress",
+    },
 }, { timestamps: true });
 // Hash password before saving
 userSchema.pre("save", function (next) {
@@ -33,4 +39,21 @@ userSchema.pre("save", function (next) {
         next();
     });
 });
+// Remove password after saving user
+userSchema.post("save", function (doc, next) {
+    doc.password = "";
+    next();
+});
+// Check if user exists by ID
+userSchema.statics.isUserExistsById = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield this.findOne({ _id: id }).select("+password");
+    });
+};
+// Compare passwords
+userSchema.statics.isPasswordMatched = function (plainTextPassword, hashedPassword) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield bcrypt_1.default.compare(plainTextPassword, hashedPassword);
+    });
+};
 exports.User = (0, mongoose_1.model)("User", userSchema);
