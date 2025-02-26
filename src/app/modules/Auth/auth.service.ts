@@ -6,38 +6,76 @@ import AppError from "../../errors/AppError";
 import { sendEmail } from "../../utils/sendEmail";
 import { User } from "../User/user.model";
 import { TLoginUser } from "./auth.interface";
-import { createToken, verifyToken } from "./auth.utils";
+import { createToken, generateMailCode, verifyToken } from "./auth.utils";
+// import { verifyTOTP } from "../utils/totp";
+// import { redisClient } from "../config/redis";
 
 const loginUser = async (payload: TLoginUser) => {
-  // checking if the user is exist
+  // Checking if the user exists
   const user = await User.isUserExistsById(payload.id);
 
   if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "This user is not found !");
-  }
-  // checking if the user is already deleted
-
-  const isDeleted = user?.isDeleted;
-
-  if (isDeleted) {
-    throw new AppError(httpStatus.FORBIDDEN, "This user is deleted !");
+    throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
   }
 
-  // checking if the user is blocked
-
-  const userStatus = user?.userStatus;
-
-  if (userStatus === "blocked") {
-    throw new AppError(httpStatus.FORBIDDEN, "This user is blocked ! !");
+  // Checking if the user is deleted
+  if (user.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is deleted!");
   }
 
-  //checking if the password is correct
+  // Checking if the user is blocked
+  if (user.userStatus === "blocked") {
+    throw new AppError(httpStatus.FORBIDDEN, "This user is blocked!");
+  }
 
-  if (!(await User.isPasswordMatched(payload?.password, user?.password)))
-    throw new AppError(httpStatus.FORBIDDEN, "Password do not matched");
+  // Checking if the password is correct
+  if (!(await User.isPasswordMatched(payload.password, user.password))) {
+    throw new AppError(httpStatus.FORBIDDEN, "Password does not match!");
+  }
 
-  //create token and sent to the  client
+  // Step 1: Generate Mail Code and store it
+  const mailCode = generateMailCode(); // Generates a 6-digit code
+  await redisClient.setEx(`mailCode:${user.email}`, 120, mailCode); // Store in Redis for 2 minutes
+  await sendEmail(user.email, mailCode); // Send the mail code
 
+  return {
+    message: "A 6-digit code has been sent to your email. Please verify.",
+    step: "mail_verification",
+  };
+};
+
+// Function to verify Mail Code
+const verifyMailCode = async (email: string, code: string) => {
+  const storedCode = await redisClient.get(`mailCode:${email}`);
+
+  if (!storedCode || storedCode !== code) {
+    throw new AppError(httpStatus.FORBIDDEN, "Invalid or expired mail code.");
+  }
+
+  // Step 2: Ask for Google Authenticator Code
+  return {
+    message: "Please enter your Google Authenticator 6-digit code.",
+    step: "google_auth_verification",
+  };
+};
+
+// Function to verify Google Authenticator Code and complete login
+const verifyGoogleAuth = async (email: string, googleCode: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found.");
+  }
+
+  // // Verify Google Authenticator Code
+  // if (!verifyTOTP(googleCode, user.googleSecret)) {
+  //   throw new AppError(
+  //     httpStatus.FORBIDDEN,
+  //     "Invalid Google Authenticator code."
+  //   );
+  // }
+
+  // Generate JWT tokens after all verifications
   const jwtPayload = {
     userId: user.email,
     role: user.role,
@@ -45,19 +83,19 @@ const loginUser = async (payload: TLoginUser) => {
 
   const accessToken = createToken(
     jwtPayload,
-    config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string
+    config.jwt_access_secret,
+    config.jwt_access_expires_in
   );
-
   const refreshToken = createToken(
     jwtPayload,
-    config.jwt_refresh_secret as string,
-    config.jwt_refresh_expires_in as string
+    config.jwt_refresh_secret,
+    config.jwt_refresh_expires_in
   );
 
   return {
     accessToken,
     refreshToken,
+    message: "Login successful!",
   };
 };
 
