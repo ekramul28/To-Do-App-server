@@ -6,12 +6,12 @@ export interface IUser {
   _id?: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: "user" | "admin";
   isGoogleAuth?: boolean;
   isDeleted: boolean;
   userStatus: UserStatus;
-  profileImg?: string;
+  picture?: string;
   googleId?: string;
   createdAt?: Date;
   updatedAt?: Date;

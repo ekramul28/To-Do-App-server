@@ -71,8 +71,10 @@ app.get(
       ...user,
       role: "user",
       isGoogleAuth: true,
-      googleId: user,
+      googleId: user.id,
     };
+
+    console.log(userWithRole);
 
     let existingUser = await User.findOne({ email: user.email });
     if (!existingUser) {
