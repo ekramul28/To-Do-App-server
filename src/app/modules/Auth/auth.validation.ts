@@ -1,52 +1,45 @@
 import { z } from "zod";
 
+// Login Validation Schema
 const loginValidationSchema = z.object({
   body: z.object({
-    id: z.string({ required_error: "Id is required." }),
-    password: z.string({ required_error: "Password is required" }),
+    email: z
+      .string({ required_error: "Email is required." })
+      .email({ message: "Invalid email format." }),
+    password: z
+      .string({ required_error: "Password is required." })
+      .min(6, { message: "Password must be at least 6 characters long." }),
   }),
 });
 
-const changePasswordValidationSchema = z.object({
+// Email Verification Schema (for OTP)
+const verifyEmailSchema = z.object({
   body: z.object({
-    oldPassword: z.string({
-      required_error: "Old password is required",
-    }),
-    newPassword: z.string({ required_error: "Password is required" }),
+    email: z
+      .string({ required_error: "Email is required." })
+      .email({ message: "Invalid email format." }),
+    code: z
+      .string({ required_error: "OTP code is required." })
+      .length(6, { message: "OTP code must be exactly 6 digits." }),
   }),
 });
 
-const refreshTokenValidationSchema = z.object({
-  cookies: z.object({
-    refreshToken: z.string({
-      required_error: "Refresh token is required!",
-    }),
-  }),
-});
-
-const forgetPasswordValidationSchema = z.object({
+// Google Authenticator Verification Schema
+const verifyGoogleAuthSchema = z.object({
   body: z.object({
-    id: z.string({
-      required_error: "User id is required!",
-    }),
-  }),
-});
-
-const resetPasswordValidationSchema = z.object({
-  body: z.object({
-    id: z.string({
-      required_error: "User id is required!",
-    }),
-    newPassword: z.string({
-      required_error: "User password is required!",
-    }),
+    email: z
+      .string({ required_error: "Email is required." })
+      .email({ message: "Invalid email format." }),
+    googleCode: z
+      .string({ required_error: "Google Authenticator code is required." })
+      .length(6, {
+        message: "Google Authenticator code must be exactly 6 digits.",
+      }),
   }),
 });
 
 export const AuthValidation = {
   loginValidationSchema,
-  changePasswordValidationSchema,
-  refreshTokenValidationSchema,
-  forgetPasswordValidationSchema,
-  resetPasswordValidationSchema,
+  verifyEmailSchema,
+  verifyGoogleAuthSchema,
 };

@@ -1,7 +1,7 @@
-import dotenv from 'dotenv';
-import path from 'path';
+import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config({ path: path.join((process.cwd(), '.env')) });
+dotenv.config({ path: path.join((process.cwd(), ".env")) });
 
 export default {
   NODE_ENV: process.env.NODE_ENV,
@@ -18,4 +18,7 @@ export default {
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
+  redis_host: process.env.REDIS_HOST,
+  redis_port: process.env.REDIS_PORT,
+  redis_password: process.env.REDIS_PASSWORD,
 };

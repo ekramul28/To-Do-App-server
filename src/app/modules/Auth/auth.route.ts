@@ -1,41 +1,32 @@
 import express from "express";
-import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { AuthControllers } from "./auth.controller";
 import { AuthValidation } from "./auth.validation";
-import { USER_ROLE } from "../User/user.const";
 
 const router = express.Router();
 
+// Step 1: Send Email OTP
 router.post(
-  "/login",
+  "/sendmail",
   validateRequest(AuthValidation.loginValidationSchema),
-  AuthControllers.loginUser
+  AuthControllers.sendEmailOTP
 );
 
+// Step 2: Verify Email OTP
 router.post(
-  "/change-password",
-  auth(USER_ROLE.Admin, USER_ROLE.User),
-  validateRequest(AuthValidation.changePasswordValidationSchema),
-  AuthControllers.changePassword
+  "/verify-email",
+  validateRequest(AuthValidation.verifyEmailSchema),
+  AuthControllers.verifyEmailOTP
 );
 
+// Step 3: Verify Google Authenticator & Issue Tokens
 router.post(
-  "/refresh-token",
-  validateRequest(AuthValidation.refreshTokenValidationSchema),
-  AuthControllers.refreshToken
+  "/verify-google-auth",
+  validateRequest(AuthValidation.verifyGoogleAuthSchema),
+  AuthControllers.verifyGoogleAuth
 );
 
-router.post(
-  "/forget-password",
-  validateRequest(AuthValidation.forgetPasswordValidationSchema),
-  AuthControllers.forgetPassword
-);
-
-router.post(
-  "/reset-password",
-  validateRequest(AuthValidation.forgetPasswordValidationSchema),
-  AuthControllers.resetPassword
-);
+// Logout (Clears refresh token cookie)
+// router.post("/logout", AuthControllers.logout);
 
 export const AuthRoutes = router;

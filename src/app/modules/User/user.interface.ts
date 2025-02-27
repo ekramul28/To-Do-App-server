@@ -18,7 +18,7 @@ export interface IUser {
 
 export interface UserModel extends Model<IUser> {
   // Instance method for checking if the user exists
-  isUserExistsById(id: string): Promise<IUser | null>;
+  isUserExistsById(email: string): Promise<IUser | null>;
 
   // Instance method for checking if passwords match
   isPasswordMatched(

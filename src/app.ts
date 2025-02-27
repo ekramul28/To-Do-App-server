@@ -53,12 +53,21 @@ app.get(
     failureRedirect: "http://localhost:3000/login",
   }),
   (req, res) => {
+    if (!req.user) {
+      return res.redirect("http://localhost:3000/login");
+    }
+
+    // Add role to user
+    const userWithRole = { ...req.user, role: "user" };
+
+    // Generate access token with updated user object
     const accessToken = createToken(
-      req.user as any,
+      userWithRole as any,
       config.jwt_access_secret as string,
       config.jwt_access_expires_in as string
     );
-    console.log(req.user);
+
+    console.log(userWithRole);
     res.redirect(`http://localhost:5173/dashboard?token=${accessToken}`);
   }
 );
