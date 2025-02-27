@@ -11,6 +11,7 @@ export interface IUser {
   isGoogleAuth?: boolean;
   isDeleted: boolean;
   userStatus: UserStatus;
+  profileImg?: string;
   googleId?: string;
   createdAt?: Date;
   updatedAt?: Date;

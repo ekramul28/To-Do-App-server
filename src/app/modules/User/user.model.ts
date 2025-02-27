@@ -9,7 +9,8 @@ const userSchema = new Schema<IUser, UserModel>(
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     isGoogleAuth: { type: Boolean, default: false },
-    googleId: { type: String },
+    profileImg: { type: String },
+    id: { type: String },
     isDeleted: { type: Boolean, default: false },
     userStatus: {
       type: String,

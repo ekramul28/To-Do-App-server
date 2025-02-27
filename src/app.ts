@@ -15,6 +15,7 @@ import session from "express-session";
 import passport from "./app/utils/passport";
 import { createToken } from "./app/modules/Auth/auth.utils";
 import config from "./app/config";
+import { User } from "./app/modules/User/user.model";
 
 dotenv.config();
 // Parsers
@@ -47,18 +48,36 @@ app.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+interface GoogleUser {
+  id: string;
+  email: string;
+  name?: string;
+}
+
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
     failureRedirect: "http://localhost:3000/login",
   }),
-  (req, res) => {
+  async (req, res) => {
     if (!req.user) {
       return res.redirect("http://localhost:3000/login");
     }
 
     // Add role to user
-    const userWithRole = { ...req.user, role: "user" };
+    const user = req.user as GoogleUser;
+
+    const userWithRole = {
+      ...user,
+      role: "user",
+      isGoogleAuth: true,
+      googleId: user,
+    };
+
+    let existingUser = await User.findOne({ email: user.email });
+    if (!existingUser) {
+      await User.create(userWithRole);
+    }
 
     // Generate access token with updated user object
     const accessToken = createToken(

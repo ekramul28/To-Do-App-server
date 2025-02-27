@@ -39,41 +39,53 @@ const verifyEmailOTP = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// Step 3: Verify Google Authenticator & Issue Tokens
-const verifyGoogleAuth = catchAsync(async (req: Request, res: Response) => {
-  const { email, googleCode } = req.body;
-
-  if (!email || !googleCode) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Email and Google Authenticator code are required."
-    );
-  }
-
-  const { accessToken, refreshToken } = await AuthServices.verifyGoogleAuth(
-    email,
-    googleCode
-  );
-
-  // Set Refresh Token in HTTP-only cookie
-  res.cookie("refreshToken", refreshToken, {
-    secure: config.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-  });
+const authLogin = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthServices.authLogin(req, res);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Login successful!",
-    data: { accessToken },
+    message: "login successful",
+    data: result,
   });
 });
+
+// Step 3: Verify Google Authenticator & Issue Tokens
+// const verifyGoogleAuth = catchAsync(async (req: Request, res: Response) => {
+//   const { email, googleCode } = req.body;
+
+//   if (!email || !googleCode) {
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       "Email and Google Authenticator code are required."
+//     );
+//   }
+
+//   const { accessToken, refreshToken } = await AuthServices.verifyGoogleAuth(
+//     email,
+//     googleCode
+//   );
+
+//   // Set Refresh Token in HTTP-only cookie
+//   res.cookie("refreshToken", refreshToken, {
+//     secure: config.NODE_ENV === "production",
+//     httpOnly: true,
+//     sameSite: "none",
+//     maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+//   });
+
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "Login successful!",
+//     data: { accessToken },
+//   });
+// });
 
 // Export Controllers
 export const AuthControllers = {
   sendEmailOTP,
   verifyEmailOTP,
-  verifyGoogleAuth,
+  authLogin,
+  // verifyGoogleAuth,
 };
