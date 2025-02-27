@@ -12,10 +12,10 @@ const router = express.Router();
 
 router.post(
   "/create-user",
-  auth(USER_ROLE.Admin, USER_ROLE.User),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
+    console.log("data is ", req.body);
     next();
   },
   validateRequest(UserValidation.userRegisterSchema),

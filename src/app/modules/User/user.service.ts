@@ -8,6 +8,7 @@ type TUser = {
   role: string;
   profileImg: string;
   name: string;
+  userStatus: string;
 };
 
 const createUserFromDB = async (file: any, data: any) => {
@@ -16,8 +17,7 @@ const createUserFromDB = async (file: any, data: any) => {
   // Use default password if not provided
   userData.password = data.password || (config.default_password as string);
 
-  // Set user role
-  userData.role = "user";
+  userData.name = data.name;
 
   // Set user email
   userData.email = data.email;
@@ -30,6 +30,7 @@ const createUserFromDB = async (file: any, data: any) => {
     userData.profileImg = secure_url as string;
   }
   // Create user in the database
+  console.log("last user data", userData);
   const user = await User.create(userData);
 
   return user;

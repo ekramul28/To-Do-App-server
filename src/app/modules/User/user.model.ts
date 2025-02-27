@@ -34,10 +34,10 @@ userSchema.post("save", function (doc, next) {
   next();
 });
 
-// Check if user exists by ID
-userSchema.statics.isUserExistsById = async function (id: string) {
-  return await this.findOne({ _id: id }).select("+password");
-};
+// // Check if user exists by ID
+// userSchema.statics.isUserExistsById = async function (id: string) {
+//   return await this.findOne({ _id: id }).select("+password");
+// };
 
 // Compare passwords
 userSchema.statics.isPasswordMatched = async function (

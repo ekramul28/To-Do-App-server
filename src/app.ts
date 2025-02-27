@@ -13,6 +13,8 @@ const app: Application = express();
 import dotenv from "dotenv";
 import session from "express-session";
 import passport from "./app/utils/passport";
+import { createToken } from "./app/modules/Auth/auth.utils";
+import config from "./app/config";
 
 dotenv.config();
 // Parsers
@@ -51,8 +53,13 @@ app.get(
     failureRedirect: "http://localhost:3000/login",
   }),
   (req, res) => {
-    // Redirect user to frontend with token
-    res.redirect(`http://localhost:3000/dashboard?token=${req.user}`);
+    const accessToken = createToken(
+      req.user as any,
+      config.jwt_access_secret as string,
+      config.jwt_access_expires_in as string
+    );
+    console.log(req.user);
+    res.redirect(`http://localhost:5173/dashboard?token=${accessToken}`);
   }
 );
 
