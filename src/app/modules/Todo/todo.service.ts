@@ -16,13 +16,17 @@ const createTodo = async (todoData: ITodo) => {
   }
 
   const todo = await Todo.create(todoData);
-  console.log("this is todo", todo);
   if (user.isGoogleAuth) {
-    const eventId = await createGoogleEvent(todo);
-    todo.googleEventId = eventId ?? undefined;
-    await todo.save();
+    try {
+      const eventId = await createGoogleEvent(todo);
+      console.log("event", eventId);
+      todo.googleEventId = eventId ?? undefined;
+      await todo.save();
+    } catch (error) {
+      console.log(error);
+    }
   }
-
+  console.log(todo);
   return todo;
 };
 
@@ -31,8 +35,6 @@ const getTodos = async (email: string) => {
 };
 
 const updateTodo = async (_id: string, updateData: Partial<ITodo>) => {
-  console.log("ok", updateData);
-  console.log("ok22", _id);
   try {
     const todo = await Todo.findByIdAndUpdate(_id, updateData, { new: true });
     console.log("this is todo", todo);

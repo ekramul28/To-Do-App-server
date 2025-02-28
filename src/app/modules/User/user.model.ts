@@ -11,6 +11,8 @@ const userSchema = new Schema<IUser, UserModel>(
     isGoogleAuth: { type: Boolean, default: false },
     picture: { type: String },
     googleId: { type: String },
+    accessToken: { type: String },
+    refreshToken: { type: String },
     isDeleted: { type: Boolean, default: false },
     userStatus: {
       type: String,

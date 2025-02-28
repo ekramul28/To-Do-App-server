@@ -45,7 +45,11 @@ app.use(passport.session());
 // Google Authentication Routes
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    accessType: "offline",
+    prompt: "consent",
+  })
 );
 
 interface GoogleUser {
@@ -66,7 +70,6 @@ app.get(
 
     // Add role to user
     const user = req.user as GoogleUser;
-
     const userWithRole = {
       ...user,
       role: "user",
@@ -105,7 +108,7 @@ app.use("/api/v1", router);
 
 // Test route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hi Next Level Developer !");
+  res.send("ToDoApp Developer !");
 });
 
 // Global error handler middleware

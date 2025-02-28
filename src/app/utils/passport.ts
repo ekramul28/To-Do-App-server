@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import dotenv from "dotenv";
+import { User } from "../modules/User/user.model";
 
 dotenv.config();
 
@@ -10,18 +11,46 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       callbackURL: process.env.GOOGLE_CALLBACK_URL as string,
+      passReqToCallback: true, // Allows access to req object
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (req, accessToken, refreshToken, profile, done) => {
       try {
-        // Simulate a user lookup or creation in database
-        const user = {
-          id: profile.id,
-          name: profile.displayName,
-          email: profile.emails?.[0]?.value,
-          picture: profile.photos?.[0]?.value,
-        };
+        console.log("🔹 Access Token:", accessToken);
+        console.log("🔹 Refresh Token:", refreshToken);
+
+        // 🔹 Store refreshToken in database for future use
+        let user = await User.findOne({ googleId: profile.id });
+
+        if (user) {
+          console.log("✅ Existing User Found:", user.email);
+
+          // 🔹 If refreshToken is not received, use the stored one
+          if (!refreshToken) {
+            refreshToken = user.refreshToken;
+          }
+
+          // 🔹 Update user with new accessToken & refreshToken if available
+          user.accessToken = accessToken;
+          if (refreshToken) user.refreshToken = refreshToken;
+
+          await user.save();
+        } else {
+          console.log("🆕 New User! Creating account...");
+          user = new User({
+            googleId: profile.id,
+            name: profile.displayName,
+            email: profile.emails?.[0]?.value,
+            picture: profile.photos?.[0]?.value,
+            accessToken,
+            refreshToken, // Store the first refresh token
+          });
+
+          await user.save();
+        }
+
         return done(null, user);
       } catch (err) {
+        console.error("❌ Error in Google OAuth:", err);
         return done(err);
       }
     }
