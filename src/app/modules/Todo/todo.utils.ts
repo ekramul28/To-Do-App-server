@@ -15,8 +15,8 @@ export const createGoogleEvent = async (todo: ITodo) => {
     requestBody: {
       summary: todo.title,
       description: todo.description,
-      start: { dateTime: todo.dueDate.toISOString() },
-      end: { dateTime: todo.dueDate.toISOString() },
+      start: { dateTime: todo.startDate.toISOString() },
+      end: { dateTime: todo.endDate.toISOString() },
     },
   });
   return event.data.id;
@@ -29,8 +29,8 @@ export const updateGoogleEvent = async (todo: ITodo) => {
     requestBody: {
       summary: todo.title,
       description: todo.description,
-      start: { dateTime: todo.dueDate.toISOString() },
-      end: { dateTime: todo.dueDate.toISOString() },
+      start: { dateTime: todo.startDate.toISOString() },
+      end: { dateTime: todo.endDate.toISOString() },
     },
   });
 };

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import httpStatus from "http-status";
-import jwt, { JwtPayload } from "jsonwebtoken";
+// import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 import { sendEmail } from "../../utils/sendEmail";
@@ -8,7 +8,6 @@ import { User } from "../User/user.model";
 import { TLoginUser } from "./auth.interface";
 import { createToken, generateMailCode, verifyToken } from "./auth.utils";
 import { redisClient } from "../../utils/redisClient";
-import { verifyTOTP } from "../../utils/totpUtils";
 
 // Step 1: Send Email OTP
 const sendEmailOTP = async (payload: TLoginUser) => {
@@ -62,9 +61,10 @@ const verifyEmailOTP = async (email: string, code: string) => {
 
   // Generate JWT tokens
   const jwtPayload = {
-    userId: user.email,
+    userId: user._id,
+    email: user.email,
     name: user.name,
-    picture: user.profileImg,
+    picture: user.picture,
     role: user.role,
   };
 

@@ -5,10 +5,11 @@ const todoSchema = new Schema<ITodo>(
   {
     title: { type: String, required: true },
     description: { type: String },
-    dueDate: { type: Date, required: true },
+    startDate: { type: Date },
+    endDate: { type: Date },
     status: {
       type: String,
-      enum: ["Pending", "Completed"],
+      enum: ["Pending", "inProgress", "Completed"],
       default: "Pending",
     },
     priority: {
@@ -16,8 +17,9 @@ const todoSchema = new Schema<ITodo>(
       enum: ["High", "Medium", "Low"],
       default: "Medium",
     },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userEmail: { type: String },
     googleEventId: { type: String },
+    isCompleted: { type: String, default: false },
   },
   { timestamps: true }
 );

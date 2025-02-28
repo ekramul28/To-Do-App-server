@@ -15,7 +15,7 @@ const moduleRoutes = [
     route: UserRoutes,
   },
   {
-    path: "/todo",
+    path: "/todos",
     route: TodoRoutes,
   },
 ];

@@ -6,7 +6,6 @@ import { TodoService } from "./todo.service";
 const createTodoHandler = catchAsync(async (req, res) => {
   const result = await TodoService.createTodo({
     ...req.body,
-    user: req.user.id,
   });
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -16,7 +15,9 @@ const createTodoHandler = catchAsync(async (req, res) => {
   });
 });
 const getTodoHandler = catchAsync(async (req, res) => {
-  const result = await TodoService.getTodos(req.user.id);
+  const { email } = req.params;
+  console.log(email);
+  const result = await TodoService.getTodos(email);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -25,7 +26,10 @@ const getTodoHandler = catchAsync(async (req, res) => {
   });
 });
 const updateTodoHandler = catchAsync(async (req, res) => {
-  const result = await TodoService.updateTodo(req.params.id, req.body);
+  const { id } = req.params;
+  console.log(req.params);
+  console.log(id);
+  const result = await TodoService.updateTodo(id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

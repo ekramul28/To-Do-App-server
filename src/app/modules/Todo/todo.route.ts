@@ -7,12 +7,12 @@ const router = express.Router();
 
 router.post(
   "/",
-  validateRequest(createTodoSchema),
+  // validateRequest(createTodoSchema),
   TodoController.createTodoHandler
 );
-router.get("/", TodoController.getTodoHandler);
+router.get("/:email", TodoController.getTodoHandler);
 
-router.put(
+router.patch(
   "/:id",
   validateRequest(updateTodoSchema),
   TodoController.updateTodoHandler
