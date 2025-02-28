@@ -54,9 +54,11 @@ app.get(
 );
 
 interface GoogleUser {
-  id: string;
+  _id: string;
   email: string;
   name?: string;
+  picture?: string;
+  googleId: string;
 }
 
 app.get(
@@ -71,14 +73,20 @@ app.get(
 
     // Add role to user
     const user = req.user as GoogleUser;
+
+    console.log("this is ok", user);
+
     const userWithRole = {
-      ...user,
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      picture: user.picture,
       role: "user",
       isGoogleAuth: true,
-      googleId: user.id,
+      googleId: user.googleId,
     };
 
-    console.log(userWithRole);
+    console.log("this is ok ok ", userWithRole);
 
     let existingUser = await User.findOne({ email: user.email });
     if (!existingUser) {
