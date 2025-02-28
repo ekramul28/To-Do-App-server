@@ -15,18 +15,18 @@ passport.use(
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-        console.log("🔹 Access Token:", accessToken);
-        console.log("🔹 Refresh Token:", refreshToken);
+        console.log(" Access Token:", accessToken);
+        console.log(" Refresh Token:", refreshToken);
 
         // 🔹 Store refreshToken in database for future use
         let user = await User.findOne({ googleId: profile.id });
 
         if (user) {
-          console.log("✅ Existing User Found:", user.email);
+          console.log(" Existing User Found:", user.email);
 
           // 🔹 If refreshToken is not received, use the stored one
           if (!refreshToken) {
-            refreshToken = user.refreshToken;
+            refreshToken = user.refreshToken as string;
           }
 
           // 🔹 Update user with new accessToken & refreshToken if available
@@ -35,14 +35,14 @@ passport.use(
 
           await user.save();
         } else {
-          console.log("🆕 New User! Creating account...");
+          console.log("New User! Creating account...");
           user = new User({
             googleId: profile.id,
             name: profile.displayName,
             email: profile.emails?.[0]?.value,
             picture: profile.photos?.[0]?.value,
             accessToken,
-            refreshToken, // Store the first refresh token
+            refreshToken,
           });
 
           await user.save();
@@ -50,7 +50,7 @@ passport.use(
 
         return done(null, user);
       } catch (err) {
-        console.error("❌ Error in Google OAuth:", err);
+        console.error("Error in Google OAuth:", err);
         return done(err);
       }
     }

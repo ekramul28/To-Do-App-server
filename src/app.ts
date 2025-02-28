@@ -16,6 +16,7 @@ import passport from "./app/utils/passport";
 import { createToken } from "./app/modules/Auth/auth.utils";
 import config from "./app/config";
 import { User } from "./app/modules/User/user.model";
+import { oauth2Client } from "./app/modules/Todo/todo.utils";
 
 dotenv.config();
 // Parsers
@@ -46,7 +47,7 @@ app.use(passport.session());
 app.get(
   "/auth/google",
   passport.authenticate("google", {
-    scope: ["profile", "email"],
+    scope: ["profile", "email", "https://www.googleapis.com/auth/calendar"],
     accessType: "offline",
     prompt: "consent",
   })

@@ -1,24 +1,26 @@
 import { User } from "../User/user.model";
-import { ITodo } from "./todo.interface";
-import { Todo } from "./todo.model";
 import {
   createGoogleEvent,
   deleteGoogleEvent,
   updateGoogleEvent,
-} from "./todo.utils";
+} from "./googleCalendar";
+import { ITodo } from "./todo.interface";
+import { Todo } from "./todo.model";
 
 const createTodo = async (todoData: ITodo) => {
   console.log("data44", todoData);
   const user = await User.findOne({ email: todoData.userEmail });
   console.log({ user });
+
   if (!user || user.isDeleted) {
     throw new Error("User not found or has been deleted.");
   }
 
   const todo = await Todo.create(todoData);
+
   if (user.isGoogleAuth) {
     try {
-      const eventId = await createGoogleEvent(todo);
+      const eventId = await createGoogleEvent(user._id.toString(), todo);
       console.log("event", eventId);
       todo.googleEventId = eventId ?? undefined;
       await todo.save();
@@ -40,7 +42,10 @@ const updateTodo = async (_id: string, updateData: Partial<ITodo>) => {
     console.log("this is todo", todo);
 
     if (todo?.googleEventId) {
-      await updateGoogleEvent(todo);
+      const user = await User.findOne({ email: todo.userEmail });
+      if (user && user.isGoogleAuth) {
+        await updateGoogleEvent(user._id.toString(), todo);
+      }
     }
     return todo;
   } catch (error) {
@@ -50,8 +55,12 @@ const updateTodo = async (_id: string, updateData: Partial<ITodo>) => {
 
 const deleteTodo = async (id: string) => {
   const todo = await Todo.findByIdAndDelete(id);
+
   if (todo?.googleEventId) {
-    await deleteGoogleEvent(todo.googleEventId);
+    const user = await User.findOne({ email: todo.userEmail });
+    if (user && user.isGoogleAuth) {
+      await deleteGoogleEvent(user._id.toString(), todo.googleEventId);
+    }
   }
   return todo;
 };
